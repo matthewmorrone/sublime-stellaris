@@ -1,0 +1,72 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+file_extensions:
+  - txt
+scope: source.stellaris
+variables:
+  # Types
+  # https://www.w3.org/TR/css3-values/#numeric-types
+  integer: '(?:[-+]?\d+)'
+  number: '[-+]?(?:(?:\d*\.\d+(?:[eE]{{integer}})*)|{{integer}})'
+
+contexts:
+  main:
+    # Strings begin and end with quotes, and use backslashes as an escape
+    # character
+    - match: '"'
+      scope: punctuation.definition.string.begin.stellaris
+      push: double_quoted_string
+
+    - match: '#\s*'
+      scope: punctuation.definition.comment.stellaris
+      push: line_comment
+
+    # Keywords are if, else for and while.
+    # Note that blackslashes don't need to be escaped within single quoted
+    # strings in YAML. When using single quoted strings, only single quotes
+    # need to be escaped: this is done by using two single quotes next to each
+    # other.
+    - match: '(?i)\b(pc_\w+|sr_\w+|ap_\w+|d_\w+)\b'
+      scope: keyword.control.stellaris
+
+    - match: '(?i)\b(x|y|yes|no|from|to|prev|fromfrom)\b'
+      scope: keyword.constant.stellaris
+
+    # Numbers
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric.stellaris
+
+    - match: '(?i)\b(and|or|not|nor)\b'
+      scope: keyword.operator.stellaris
+
+    - match: '(?i)\b(limit|while|if)\b'
+      scope: keyword.command.stellaris
+
+    - match: '(?i)\b(food|energy|minerals|influence|unity|production_research|society_research|engineering_research)\b'
+      scope: keyword.resource.stellaris
+
+    - match: \{
+      push: brackets
+
+    - match: \}
+      scope: invalid.illegal.stray-bracket-end
+
+  brackets:
+    - match: \}
+      pop: true
+    - include: main
+
+  double_quoted_string:
+    - meta_scope: string.quoted.double.stellaris
+    - match: '\\.'
+      scope: constant.character.escape.stellaris
+    - match: '"'
+      scope: punctuation.definition.string.end.stellaris
+      pop: true
+
+  line_comment:
+    - meta_scope: comment.line.stellaris
+    - match: $
+      pop: true
+
